@@ -5,6 +5,7 @@ CREATE SCHEMA IF NOT EXISTS B_ODU;
 CREATE TABLE IF NOT EXISTS B_ODU.formulario (
     id SERIAL PRIMARY KEY,
     fecha_publicacion DATE NOT NULL,
+    fecha_ingreso TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Nuevo campo para la fecha de ingreso
     tipo_de_medio VARCHAR(255) NOT NULL,
     nombre_medio VARCHAR(255) NOT NULL,
     otro_tipo_medio VARCHAR(255),
