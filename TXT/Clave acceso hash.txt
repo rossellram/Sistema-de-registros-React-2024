@@ -1,0 +1,17 @@
+// ... Importa tus módulos y configuraciones
+
+const codigoAccesoPredefinido = "ODU2023"; // Código de acceso predefinido
+
+passport.use(new LocalStrategy(
+  (username, codigo_acceso, done) => {
+    // Verifica que el nombre de usuario exista y el código de acceso sea correcto
+    if (usuarios.find(u => u.username === username) && codigo_acceso === codigoAccesoPredefinido) {
+      return done(null, { username });
+    } else {
+      return done(null, false, { message: 'Credenciales incorrectas' });
+    }
+  }
+));
+
+// Resto de tu configuración de Passport y Express...
+

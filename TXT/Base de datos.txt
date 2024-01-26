@@ -1,0 +1,35 @@
+-- Crear el esquema
+CREATE SCHEMA IF NOT EXISTS B_ODU;
+
+-- Crear la tabla 'formulario' en el esquema 'B_ODU'
+CREATE TABLE IF NOT EXISTS B_ODU.formulario (
+    id SERIAL PRIMARY KEY,
+    fecha_publicacion DATE NOT NULL,
+    tipo_de_medio VARCHAR(255) NOT NULL,
+    nombre_medio VARCHAR(255) NOT NULL,
+    otro_tipo_medio VARCHAR(255),
+    otro_nombre_medio VARCHAR(255),
+    descripcion TEXT,
+    como_se_entero TEXT,
+    enlaces VARCHAR(255),
+    user_id VARCHAR(255) REFERENCES B_ODU.users(username)
+);
+
+-- Crear la tabla 'imagenes' en el esquema 'B_ODU'
+CREATE TABLE IF NOT EXISTS B_ODU.imagenes (
+    id SERIAL PRIMARY KEY,
+    formulario_id INTEGER REFERENCES B_ODU.formulario(id),
+    imagen BYTEA
+);
+
+-- Crear la tabla 'users' en el esquema 'B_ODU'
+CREATE TABLE IF NOT EXISTS B_ODU.users (
+    user_id SERIAL PRIMARY KEY,
+    username VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL
+);
+
+-- Ejemplo de datos de usuario
+INSERT INTO B_ODU.users (username, password_hash) VALUES
+    ('usuario1', '84a77f09bfdc440d7dea129c120d244c'),
+    ('usuario2', '84a77f09bfdc440d7dea129c120d244c');

@@ -1,0 +1,46 @@
+proyecto-FrontEnd/
+├── node_modules/
+├── public/
+│      └── vite.svg
+├── src/
+│    ├───components/
+│    │      └── Alerta.jsx
+│    │      └── AuthContext.jsx
+│    │      └── RutaProtegida.jsx
+│    │     
+│    ├──config/    
+│    │       └──ClienteAxios.jsx 
+│    ├──pages/   
+│    │      └──Formulario.jsx
+│    │      └──Login.jsx
+│    │      └──Vista.jsx
+│    │      └──Lobby.jsx
+│    │ 
+│    ├── App.jsx    
+│    │   
+│    ├── index.css    
+│    │   
+│    ├── main.jsx   
+│        
+├──.Env.example
+├──.eslintrc.cjs
+├──.gitignore
+├──index.html
+├──package-lock.json
+├──package.json
+├──postcss.config.js
+├──README.md
+├──Tailwind.config.js
+├──vite.config.js
+
+
+
+
+
+
+
+
+
+
+
+ 

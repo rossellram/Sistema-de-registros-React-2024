@@ -1,0 +1,16 @@
+proyecto-backend/
+├── node_modules/
+├── src/
+│   ├── routes/
+│   │   ├── formRoutes.js      // Rutas específicas para el formulario
+│   │   ├── LoginRoutes.js     // Rutas específicas para la autenticación
+│   │   └── index.js           // Archivo principal para manejar todas las rutas
+│   ├── db/
+│   │   └── pool.js           // Configuración de la conexión a PostgreSQL
+│   │  
+│   ├── middleware/
+│       └── authMiddleware.js  
+│
+├─ App.js                       // Archivo principal del servidor
+├── package.json
+└── ...
