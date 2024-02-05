@@ -3,26 +3,24 @@ import DataTable from 'react-data-table-component';
 import { clienteAxiosForm } from '../config/clienteAxios';
 import { useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
-
-
 import * as XLSX from 'xlsx';
 
 const LoadingMessage = () => {
-  return <div>Por favor espera, los datos se estan cargando...</div>;
+  return <div>Por favor espera, los datos se están cargando...</div>;
 };
 
 function Vista() {
   const navigate = useNavigate();
   const [datosAlmacenados, setDatosAlmacenados] = useState([]);
-  const [orden, setOrden] = useState('fecha_subida'); 
+  const [orden, setOrden] = useState('fecha_subida');
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [modalImages, setModalImages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filtro, setFiltro] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-
         setLoading(true);
         const response = await clienteAxiosForm.get('/datos-almacenados');
         const formattedData = response.data.map((item) => ({
@@ -38,7 +36,6 @@ function Vista() {
       } catch (error) {
         console.error('Error al obtener datos:', error);
       } finally {
-        // Indicar que la carga ha terminado
         setLoading(false);
       }
     };
@@ -110,7 +107,6 @@ function Vista() {
     setModalIsOpen(false);
   };
 
-
   const columns = [
     { name: 'ID', selector: 'id', sortable: true, minWidth: '50px' },
     { name: 'Usuario', selector: 'nombre_usuario', sortable: true, cell: (row) => row.nombre_usuario, minWidth: '120px' },
@@ -136,24 +132,20 @@ function Vista() {
         )}
       </div>
     )},
-
     {
       name: 'Imágenes',
       cell: (row) => (
         <div>
           {row.imagenes && row.imagenes.length > 0 && (
             <div>
-              {/* Muestra la primera imagen y abre el modal al hacer clic */}
               <img
                 src={`data:image/jpeg;base64,${row.imagenes[0]}`}
                 alt={`imagen_${row.id}_1`}
                 className="cursor-pointer max-h-12 mr-2"
                 onClick={() => handleOpenImageModal(row.imagenes)}
               />
-             {/* Verifica si hay más de una imagen y muestra las adicionales en el modal */}
               {row.imagenes.length > 1 && (
                 <div>
-        
                   <span
                     className="text-blue-500 cursor-pointer"
                     onClick={() => handleOpenImageModal(row.imagenes.slice(1))}
@@ -168,90 +160,124 @@ function Vista() {
       ),
     },
   ];
-  
+
+  const handleChange = (e) => {
+    setFiltro(e.target.value);
+  };
+
+  const filteredData = datosAlmacenados.filter((row) => {
+    const enlaces = row.enlaces || '';
+    const nombreUsuario = row.nombre_usuario || '';
+    const tipoDeMedio = row.tipo_de_medio || '';
+    const nombreMedio = row.nombre_medio || '';
+    const otroTipoMedio = row.otro_tipo_medio || '';
+    const otroNombreMedio = row.otro_nombre_medio || '';
+    const descripcion = row.descripcion || '';
+    const comoSeEntero = row.como_se_entero || '';
+
+    return (
+      nombreUsuario.toLowerCase().includes(filtro.toLowerCase()) ||
+      tipoDeMedio.toLowerCase().includes(filtro.toLowerCase()) ||
+      nombreMedio.toLowerCase().includes(filtro.toLowerCase()) ||
+      otroTipoMedio.toLowerCase().includes(filtro.toLowerCase()) ||
+      otroNombreMedio.toLowerCase().includes(filtro.toLowerCase()) ||
+      descripcion.toLowerCase().includes(filtro.toLowerCase()) ||
+      comoSeEntero.toLowerCase().includes(filtro.toLowerCase()) ||
+      enlaces.toLowerCase().includes(filtro.toLowerCase())
+    );
+  });
+
+
   return (
-    <div className="container mx-auto mt-4">
-     <h1 className="text-2xl font-bold mb-4" style={{ color: 'navy' }}>ODU</h1>
+    <div className="container mx-auto mt-4 p-4 bg-white shadow-md rounded-md">
+      <h1 className="text-2xl font-bold mb-4" style={{ color: 'navy' }}>
+        ODU
+      </h1>
 
-
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-end mb-4 space-x-2">
         <button
-          className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 focus:outline-none"
+          className="px-4 py-2 bg-gray-300 text-gray-700  rounded-lg hover:bg-gray-400 focus:outline-none"
           onClick={handleBack}
         >
           Volver
         </button>
         <button
-          className="ml-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none"
+          className="px-4 py-2 bg-blue-500 text-white  rounded-lg hover:bg-blue-600 focus:outline-none"
           onClick={handleExportToExcel}
         >
           Exportar a Excel
         </button>
       </div>
-    
-  
-      <DataTable
-        title="Datos Almacenados"
-        columns={columns}
-        data={datosAlmacenados}
-        pagination
-        responsive
-        paginationPerPage={10}
-        paginationRowsPerPageOptions={[10, 20, 30]}
-        paginationComponentOptions={{
-          rowsPerPageText: 'Filas por página:',
-          rangeSeparatorText: 'de',
-        }}
-        className="w-full mb-4 border"
-        striped
-        highlightOnHover
-        customStyles={{
-          headRow: { style: { backgroundColor: 'bg-gray-800' } },
-          headCells: { style: { fontSize: '14px', color: 'text-white', padding: '2px' } },
-          cells: { style: { fontSize: '14px', padding: '2px' } },
-        }}
-      // Utiliza la prop noDataComponent para personalizar el mensaje cuando no hay datos
-        noDataComponent={<LoadingMessage />}
-      />
 
-      {/* Modal para mostrar todas las imágenes */}
-      <Modal
-  isOpen={modalIsOpen}
-  onRequestClose={handleCloseImageModal}
-  contentLabel="Imágenes"
-  // Estilos personalizados para el modal
-  style={{
-    content: {
-      top: '50%',
-      left: '50%',
-      right: 'auto',
-      bottom: 'auto',
-      marginRight: '-50%',
-      transform: 'translate(-50%, -50%)',
-      // Puedes agregar más estilos según tus preferencias
-    },
-    overlay: {
-      background: 'rgba(0, 0, 0, 0.5)',
-      // Puedes ajustar el color y la opacidad del fondo del modal
-    },
-  }}
->
-  {/* Botón "Cerrar" estilizado con Tailwind CSS */}
-  <button
-    onClick={handleCloseImageModal}
-    className="absolute top-2 right-2 px-4 py-2 bg-blue-500 text-white rounded cursor-pointer"
-  >
-    Cerrar
-  </button>
-  <h2 className="text-xl mb-4">Imágenes</h2>
-  <div className="flex flex-wrap gap-4">
-    {modalImages.map((image, index) => (
-      <div key={index}>
-        <img src={`data:image/jpeg;base64,${image}`} alt={`imagen_${index}`} />
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Buscar..."
+          className="p-2 border border-gray-300 rounded-md"
+          value={filtro}
+          onChange={(e) => setFiltro(e.target.value)}
+        />
       </div>
-    ))}
-  </div>
-</Modal>
+
+      <div className="overflow-x-auto">
+        <DataTable
+          title="Datos Almacenados"
+          columns={columns}
+          data={filteredData}
+          pagination
+          responsive
+          paginationPerPage={10}
+          paginationRowsPerPageOptions={[10, 20, 30]}
+          paginationComponentOptions={{
+            rowsPerPageText: 'Filas por página:',
+            rangeSeparatorText: 'de',
+          }}
+          className="w-full mb-4 border hover:bg-gray-200 rounded-md"
+          striped
+          highlightOnHover
+          customStyles={{
+            headRow: { style: { backgroundColor: 'bg-gray-800' } },
+            headCells: { style: { fontSize: '14px', color: 'text-white', padding: '2px', textAlign: 'left' } },
+            cells: { style: { fontSize: '14px', padding: '2px', textAlign: 'left' } },
+          }}
+          noDataComponent={<LoadingMessage />}
+        />
+      </div>
+
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={handleCloseImageModal}
+        contentLabel="Imágenes"
+        style={{
+          content: {
+            top: '50%',
+            left: '50%',
+            right: 'auto',
+            bottom: 'auto',
+            marginRight: '-50%',
+            transform: 'translate(-50%, -50%)',
+            borderRadius: '10px',
+          },
+          overlay: {
+            background: 'rgba(0, 0, 0, 0.5)',
+          },
+        }}
+      >
+        <button
+          onClick={handleCloseImageModal}
+          className="absolute top-2 right-2 px-4 py-2 bg-blue-500 text-white rounded-full cursor-pointer"
+        >
+          Cerrar
+        </button>
+        <h2 className="text-xl mb-4">Imágenes</h2>
+        <div className="flex flex-wrap gap-4">
+          {modalImages.map((image, index) => (
+            <div key={index}>
+              <img src={`data:image/jpeg;base64,${image}`} alt={`imagen_${index}`} className="rounded-md" />
+            </div>
+          ))}
+        </div>
+      </Modal>
     </div>
   );
 }
